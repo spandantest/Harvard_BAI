@@ -1,6 +1,5 @@
 # Fork this repository. 
 
-For help, see: https://docs.github.com/en/github/getting-started-with-github/fork-a-repo
 
 # Install conda. 
 
