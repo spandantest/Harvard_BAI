@@ -20,30 +20,23 @@ def make_dataset(list_file):
         for line in lines:
             image = line.rstrip()
             images.append(image)
-            label = image.replace('images/frame','labels/label_frame')
-            labels.append(label)
 
-
-        return images, labels
+        return images
 
 class FileListFolder(data.Dataset):
-    def __init__(self, file_list, attributes_dict, transform):
-        samples,targets  = make_dataset(file_list)
+    def __init__(self, file_list, label_dictionary_path, transform):
+        samples  = make_dataset(file_list)
 
         if len(samples) == 0:
             raise(RuntimeError("Found 0 samples"))
 
         self.root = file_list
-
+        with open(label_dictionary_path,'rb') as F:
+            label_dictionary = pickle.load(F)
+        self.label_dictionary = label_dictionary
         self.samples = samples
-        self.targets = targets
 
         self.transform = transform
-
-        with open(attributes_dict, 'rb') as F:
-            attributes = pickle.load(F)
-
-        self.attributes = attributes
 
 
     def __getitem__(self, index):
@@ -57,21 +50,16 @@ class FileListFolder(data.Dataset):
         """
 
         impath = self.samples[index]
-        label_path = impath.replace('images/frame','labels/label_frame')
-
-
+        
         sample = Image.open(impath)
-        sample_label = self.attributes[impath]
-        floated_labels = []
-        for s in sample_label:
-            floated_labels.append(float(s))
-
+        sample = sample.resize((IN_SIZE,IN_SIZE))
+        sample_label = self.label_dictionary[impath]
+        # floated_label = float(sample_label)
+        
         if self.transform is not None:
             transformed_sample = self.transform(sample)
 
-        transformed_labels = torch.LongTensor(floated_labels)
-
-        return transformed_sample, transformed_labels, impath
+        return transformed_sample, sample_label, impath
 
     def __len__(self):
         return len(self.samples)
