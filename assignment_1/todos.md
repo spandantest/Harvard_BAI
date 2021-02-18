@@ -13,7 +13,7 @@ Follow the instructions as given here: https://docs.conda.io/projects/conda/en/l
 
 This can be done with the following command:
 
-`python -m ipykernel install --name bai —user`
+`python -m ipykernel install --name bai —-user`
 
 # Create an account at wandb.ai, and set it up.
 
